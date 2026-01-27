@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر مستلزمات حيوانات أليفة</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- الهيدر -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🐾</span>
+                    <h1 class="logo-text">Pets X store</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="#home" class="nav-link active">🏠 الرئيسية</a>
+                    <a href="#products" class="nav-link">🛍️ المنتجات</a>
+                    <a href="#offers" class="nav-link">🎁 العروض</a>
+                    <a href="#cart" class="nav-link">🛒 السلة (<span id="cartCount">0</span>)</a>
+                    <a href="#complaints" class="nav-link" id="complaintsLink" style="display:none;">📝 الشكاوى</a>
+                    <a href="#admin" class="nav-link" id="adminLink" style="display:none;">⚙️ الإدارة</a>
+                    <a href="#login" class="nav-link" id="loginBtn">🔐 دخول</a>
+                    <span id="userInfo" style="display:none;"></span>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- الرسائل -->
+    <div id="messageContainer" class="container"></div>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="container">
+        <!-- الصفحة الرئيسية -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <h2>مرحباً بكم في متجر Pets X 🐾</h2>
+                <p>أفضل متجر مستلزمات حيوانات أليفة في مصر</p>
+                <button onclick="showSection('products')" class="btn btn-primary">
+                    🛍️ ابدأ التسوق
+                </button>
+            </div>
+            
+            <!-- أقسام الحيوانات -->
+<div class="animal-sections">
+    <div class="section-header">
+        <h2><i class="fas fa-paw"></i> تصفح حسب الحيوان</h2>
+    </div>
+    <div class="animals-grid">
+        <!-- قسم القطط -->
+        <div class="animal-card cat-card">
+            <div class="animal-icon">
+                <i class="fas fa-cat"></i>
+            </div>
+            <h3>🐱 القطط</h3>
+            <p>مستلزمات القطط، أطعمة، ألعاب، رمال، وأكثر</p>
+            <button onclick="filterByCategory('قطط')" class="btn btn-primary">
+                تصفح المنتجات
+            </button>
+        </div>
+        
+        <!-- قسم الكلاب -->
+        <div class="animal-card dog-card">
+            <div class="animal-icon">
+                <i class="fas fa-dog"></i>
+            </div>
+            <h3>🐶 الكلاب</h3>
+            <p>طعام الكلاب، أطواق، ألعاب، مستلزمات التدريب</p>
+            <button onclick="filterByCategory('كلاب')" class="btn btn-primary">
+                تصفح المنتجات
+            </button>
+        </div>
+        
+        <!-- قسم الطيور -->
+        <div class="animal-card bird-card">
+            <div class="animal-icon">
+                <i class="fas fa-dove"></i>
+            </div>
+            <h3>🐦 الطيور</h3>
+            <p>أقفاص، أطعمة، ألعاب، مستلزمات العناية بالطيور</p>
+            <button onclick="filterByCategory('طيور')" class="btn btn-primary">
+                تصفح المنتجات
+            </button>
+        </div>
+    </div>
+</div>
+        </section>
+
+        <!-- صفحة المنتجات -->
+        <section id="products" class="page">
+            <div class="section-header">
+                <h2>🛍️ منتجاتنا</h2>
+                <div class="filters">
+                    <input type="text" id="searchInput" placeholder="🔍 ابحث عن منتج..." class="form-control">
+                    <select id="categoryFilter" class="form-control">
+                        <option value="">كل الفئات</option>
+                        <option value="قطط">قطط</option>
+                        <option value="كلاب">كلاب</option>
+                        <option value="طيور">طيور</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="productsContainer" class="products-grid">
+                <!-- المنتجات تظهر هنا -->
+            </div>
+        </section>
+
+        <!-- صفحة العروض -->
+        <section id="offers" class="page">
+            <div class="section-header">
+                <h2>🎁 العروض والتخفيضات</h2>
+                <button onclick="openAddOfferModal()" class="btn btn-success" id="addOfferBtn" style="display:none;">
+                    ➕ إضافة عرض
+                </button>
+            </div>
+            
+            <!-- عداد تنازلي للعروض -->
+            <div class="offers-timer">
+                <h3><i class="fas fa-clock"></i> العروض تنتهي خلال:</h3>
+                <div id="offersCountdown">
+                    <div class="countdown-item">
+                        <span id="countdownDays">00</span>
+                        <span>يوم</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdownHours">00</span>
+                        <span>ساعة</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdownMinutes">00</span>
+                        <span>دقيقة</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdownSeconds">00</span>
+                        <span>ثانية</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="offersContainer" class="offers-grid">
+                <div class="empty-message">لا توجد عروض حالياً</div>
+            </div>
+        </section>
+
+        <!-- صفحة السلة -->
+        <section id="cart" class="page">
+            <div class="section-header">
+                <h2>🛒 سلة التسوق</h2>
+                <button onclick="checkout()" class="btn btn-success" id="checkoutBtn" disabled>
+                    💳 إتمام الشراء
+                </button>
+            </div>
+            
+            <div id="cartContainer">
+                <p class="empty-message">السلة فارغة</p>
+            </div>
+            
+            <div id="orderSummary" style="display:none;">
+                <h3>ملخص الطلب</h3>
+                <div class="summary-row">
+                    <span>الإجمالي:</span>
+                    <span id="totalAmount">0 ج.م</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة تسجيل الدخول -->
+        <section id="login" class="page">
+            <div class="login-container">
+                <h2>🔐 تسجيل الدخول</h2>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" class="form-control" value="">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" class="form-control" value="">
+                </div>
+                <button onclick="login()" class="btn btn-primary">دخول</button>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <p>ليس لديك حساب؟ 
+                        <a href="#" onclick="showSection('register')" style="color: #FF6B8B; text-decoration: none; font-weight: bold;">
+                            إنشاء حساب جديد
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة إنشاء حساب جديد -->
+        <section id="register" class="page">
+            <div class="login-container">
+                <h2>📝 إنشاء حساب جديد</h2>
+                
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="أدخل اسمك الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="registerPhone" class="form-control" placeholder="01xxxxxxxxx">
+                </div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="أدخل كلمة مرور قوية">
+                </div>
+                
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور</label>
+                    <input type="password" id="registerConfirm" class="form-control" placeholder="أعد إدخال كلمة المرور">
+                </div>
+                
+                <button onclick="register()" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    📝 إنشاء حساب
+                </button>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <p>هل لديك حساب بالفعل؟ 
+                        <a href="#" onclick="showSection('login')" style="color: #FF6B8B; text-decoration: none; font-weight: bold;">
+                            سجل دخول
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة الشكاوى -->
+        <section id="complaints" class="page">
+            <div class="section-header">
+                <h2>📝 قسم الشكاوى والمقترحات</h2>
+                <button onclick="openNewComplaintModal()" class="btn btn-primary" id="newComplaintBtn">
+                    📝 شكوى جديدة
+                </button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalComplaints">0</div>
+                    <div class="stat-label">إجمالي الشكاوى</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="newComplaints">0</div>
+                    <div class="stat-label">شكاوى جديدة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="resolvedComplaints">0</div>
+                    <div class="stat-label">تم حلها</div>
+                </div>
+            </div>
+            
+            <div id="complaintsContainer" style="margin-top: 2rem;">
+                <div class="empty-message">لا توجد شكاوى لعرضها</div>
+            </div>
+        </section>
+
+        <!-- لوحة التحكم -->
+        <section id="admin" class="page">
+            <div class="section-header">
+                <h2>⚙️ لوحة التحكم</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button onclick="showAddProductModal()" class="btn btn-success">
+                        ➕ إضافة منتج
+                    </button>
+                    <button onclick="showSection('offers')" class="btn btn-warning">
+                        🎁 إدارة العروض
+                    </button>
+                    <button onclick="showCustomersSection()" class="btn btn-info">
+                        👥 إدارة العملاء
+                    </button>
+                </div>
+            </div>
+            
+            <!-- قسم العملاء (يظهر عند النقر على إدارة العملاء) -->
+            <div id="customersSection" style="display: none;">
+                <h3>👥 قاعدة بيانات العملاء</h3>
+                <div class="search-bar">
+                    <input type="text" id="customerSearch" placeholder="🔍 ابحث عن عميل..." class="form-control" onkeyup="filterCustomers()">
+                </div>
+                <div id="customersContainer"></div>
+            </div>
+            
+            <!-- قسم المنتجات والعروض والطلبات (يظهر افتراضياً) -->
+            <div id="adminDefaultSections">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminProductsCount">0</div>
+                        <div class="stat-label">منتج</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminOrdersCount">0</div>
+                        <div class="stat-label">طلب</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminOffersCount">0</div>
+                        <div class="stat-label">عرض</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminCustomersCount">0</div>
+                        <div class="stat-label">عميل</div>
+                    </div>
+                </div>
+                
+                <h3>📦 المنتجات</h3>
+                <div id="adminProductsList"></div>
+                
+                <h3>🎁 العروض</h3>
+                <div id="adminOffersList"></div>
+                
+                <h3>📋 الطلبات</h3>
+                <div id="adminOrdersList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <span class="logo-icon">🐾</span>
+                    <h3>Pets X STORE </h3>
+                </div>
+                <p>📞 01556650985 | 📍 كفرالشيخ-مزلقان الأنشاء و التعمير </p>
+                <p class="copyright">© 2026 Pets X جميع الحقوق محفوظة</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- المودالات -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <h3>➕ إضافة منتج جديد</h3>
+            
+            <div class="form-group">
+                <label>اسم المنتج</label>
+                <input type="text" id="newProductName" class="form-control" placeholder="اسم المنتج">
+            </div>
+            
+            <div class="form-group">
+                <label>السعر (ج.م)</label>
+                <input type="number" id="newProductPrice" class="form-control" placeholder="السعر">
+            </div>
+            
+            <div class="form-group">
+                <label>الفئة</label>
+                <select id="newProductCategory" class="form-control">
+                    <option value="قطط">قطط</option>
+                    <option value="كلاب">كلاب</option>
+                    <option value="طيور">طيور</option>
+                    <option value="أسماك">أسماك</option>
+                    <option value="أرانب">أرانب</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>الوصف</label>
+                <textarea id="newProductDescription" class="form-control" placeholder="وصف المنتج" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>الكمية</label>
+                <input type="number" id="newProductStock" class="form-control" value="10" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label>رفع صورة المنتج</label>
+                <button type="button" onclick="openProductImageUpload()" class="btn btn-outline" style="width: 100%;">
+                    📷 رفع صورة للمنتج
+                </button>
+                <small id="productImageStatus" style="color: #666; display: block; margin-top: 5px;">
+                    لم يتم رفع صورة بعد
+                </small>
+            </div>
+            
+            <div class="modal-actions">
+                <button onclick="saveNewProduct()" class="btn btn-success">حفظ المنتج</button>
+                <button onclick="closeModal('addProductModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال رفع صورة المنتج -->
+    <div id="productImageUploadModal" class="modal">
+        <div class="modal-content">
+            <h3>📷 رفع صورة للمنتج</h3>
+            <div class="form-group">
+                <label>اختر صورة من جهازك</label>
+                <input type="file" id="productImageFile" accept="image/*" class="form-control" onchange="previewProductImage(this)">
+            </div>
+            <div class="image-preview" id="productImagePreview" style="display:none;">
+                <img id="previewImage" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+            </div>
+            <div class="form-group">
+                <label>أو أدخل رابط صورة</label>
+                <input type="text" id="productImageUrl" class="form-control" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveProductImage()" class="btn btn-success">حفظ الصورة</button>
+                <button onclick="closeModal('productImageUploadModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة عرض جديد -->
+    <div id="addOfferModal" class="modal">
+        <div class="modal-content">
+            <h3>🎁 إضافة عرض جديد</h3>
+            <div class="form-group">
+                <label>عنوان العرض</label>
+                <input type="text" id="offerTitle" class="form-control" placeholder="مثال: تخفيضات الصيف">
+            </div>
+            <div class="form-group">
+                <label>المنتج المرتبط</label>
+                <select id="offerProduct" class="form-control">
+                    <option value="">اختر منتج</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>نسبة الخصم (%)</label>
+                <input type="number" id="offerDiscount" class="form-control" min="1" max="100" placeholder="10">
+            </div>
+            <div class="form-group">
+                <label>تاريخ الانتهاء</label>
+                <input type="date" id="offerEndDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>وصف العرض</label>
+                <textarea id="offerDescription" class="form-control" rows="3" placeholder="وصف تفصيلي للعرض"></textarea>
+            </div>
+            <div class="form-group">
+                <label>رفع صورة للعرض</label>
+                <button type="button" onclick="openOfferImageUpload()" class="btn btn-outline" style="width: 100%;">
+                    📷 رفع صورة للعرض
+                </button>
+                <small id="offerImageStatus" style="color: #666; display: block; margin-top: 5px;">
+                    لم يتم رفع صورة بعد
+                </small>
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveOffer()" class="btn btn-success">حفظ العرض</button>
+                <button onclick="closeModal('addOfferModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال رفع صورة العرض -->
+    <div id="offerImageUploadModal" class="modal">
+        <div class="modal-content">
+            <h3>📷 رفع صورة للعرض</h3>
+            <div class="form-group">
+                <label>اختر صورة من جهازك</label>
+                <input type="file" id="offerImageFile" accept="image/*" class="form-control" onchange="previewOfferImage(this)">
+            </div>
+            <div class="image-preview" id="offerImagePreview" style="display:none;">
+                <img id="previewOfferImage" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+            </div>
+            <div class="form-group">
+                <label>أو أدخل رابط صورة</label>
+                <input type="text" id="offerImageUrl" class="form-control" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveOfferImage()" class="btn btn-success">حفظ الصورة</button>
+                <button onclick="closeModal('offerImageUploadModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال الشكوى الجديدة -->
+    <div id="complaintModal" class="modal">
+        <div class="modal-content">
+            <h3>📝 تقديم شكوى جديدة</h3>
+            <div class="form-group">
+                <label>نوع الشكوى</label>
+                <select id="complaintType" class="form-control">
+                    <option value="شكوى">شكوى</option>
+                    <option value="اقتراح">اقتراح</option>
+                    <option value="استفسار">استفسار</option>
+                    <option value="مشكلة تقنية">مشكلة تقنية</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>عنوان الشكوى</label>
+                <input type="text" id="complaintTitle" class="form-control" placeholder="اكتب عنواناً واضحاً">
+            </div>
+            <div class="form-group">
+                <label>تفاصيل الشكوى</label>
+                <textarea id="complaintDetails" class="form-control" rows="5" placeholder="اشرح مشكلتك بالتفصيل..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button onclick="submitComplaint()" class="btn btn-success">إرسال الشكوى</button>
+                <button onclick="closeModal('complaintModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال رد الإدارة على الشكاوى -->
+    <div id="adminReplyModal" class="modal">
+        <div class="modal-content">
+            <h3>📤 رد الإدارة</h3>
+            <div class="form-group">
+                <label>رد الإدارة</label>
+                <textarea id="adminReplyText" class="form-control" rows="4" placeholder="اكتب رد الإدارة هنا..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveAdminReply()" class="btn btn-success">حفظ الرد</button>
+                <button onclick="closeModal('adminReplyModal')" class="btn btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال عرض بيانات العميل -->
+    <div id="customerDetailsModal" class="modal">
+        <div class="modal-content">
+            <h3>👥 بيانات العميل</h3>
+            <div class="customer-details">
+                <div class="detail-row">
+                    <strong>الاسم:</strong>
+                    <span id="customerDetailName"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>البريد الإلكتروني:</strong>
+                    <span id="customerDetailEmail"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>رقم الهاتف:</strong>
+                    <span id="customerDetailPhone"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>تاريخ التسجيل:</strong>
+                    <span id="customerDetailDate"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>عدد الطلبات:</strong>
+                    <span id="customerDetailOrders"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>إجمالي المشتريات:</strong>
+                    <span id="customerDetailTotal"></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal('customerDetailsModal')" class="btn btn-secondary">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الجافاسكريبت -->
+    <script src="script.js"></script>
+</body>
+</html>
