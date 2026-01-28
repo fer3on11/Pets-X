@@ -827,6 +827,32 @@ function saveOfferImages(images) {
 // ==================== تعديل دوال التسجيل والطلبات ====================
 
 // تعديل دالة register لحفظ في Firebase
+// ==================== المستخدمين ====================
+function login() {
+    const email = document.getElementById('loginEmail')?.value || '';
+    const password = document.getElementById('loginPassword')?.value || '';
+    
+    const users = getUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        showMessage(`مرحباً بعودتك ${user.name}!`, 'success');
+        updateUI();
+        showSection('home');
+        
+        // إعادة تعيين حقول الدخول
+        if (document.getElementById('loginEmail')) {
+            document.getElementById('loginEmail').value = '';
+        }
+        if (document.getElementById('loginPassword')) {
+            document.getElementById('loginPassword').value = '';
+        }
+    } else {
+        showMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+    }
+}
+
 async function register() {
     const name = document.getElementById('registerName')?.value.trim();
     const email = document.getElementById('registerEmail')?.value.trim();
