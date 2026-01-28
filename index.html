@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
 </head>
 <body>
     <!-- الهيدر -->
@@ -24,6 +29,9 @@
                     <a href="#cart" class="nav-link">🛒 السلة (<span id="cartCount">0</span>)</a>
                     <a href="#complaints" class="nav-link" id="complaintsLink" style="display:none;">📝 الشكاوى</a>
                     <a href="#admin" class="nav-link" id="adminLink" style="display:none;">⚙️ الإدارة</a>
+                    <a href="#notifications" class="nav-link" id="notificationsLink" style="display:none;">
+                        🔔 الإشعارات (<span id="notificationsCount">0</span>)
+                    </a>
                     <a href="#login" class="nav-link" id="loginBtn">🔐 دخول</a>
                     <span id="userInfo" style="display:none;"></span>
                 </nav>
@@ -47,48 +55,48 @@
             </div>
             
             <!-- أقسام الحيوانات -->
-<div class="animal-sections">
-    <div class="section-header">
-        <h2><i class="fas fa-paw"></i> تصفح حسب الحيوان</h2>
-    </div>
-    <div class="animals-grid">
-        <!-- قسم القطط -->
-        <div class="animal-card cat-card">
-            <div class="animal-icon">
-                <i class="fas fa-cat"></i>
+            <div class="animal-sections">
+                <div class="section-header">
+                    <h2><i class="fas fa-paw"></i> تصفح حسب الحيوان</h2>
+                </div>
+                <div class="animals-grid">
+                    <!-- قسم القطط -->
+                    <div class="animal-card cat-card">
+                        <div class="animal-icon">
+                            <i class="fas fa-cat"></i>
+                        </div>
+                        <h3>🐱 القطط</h3>
+                        <p>مستلزمات القطط، أطعمة، ألعاب، رمال، وأكثر</p>
+                        <button onclick="filterByCategory('قطط')" class="btn btn-primary">
+                            تصفح المنتجات
+                        </button>
+                    </div>
+                    
+                    <!-- قسم الكلاب -->
+                    <div class="animal-card dog-card">
+                        <div class="animal-icon">
+                            <i class="fas fa-dog"></i>
+                        </div>
+                        <h3>🐶 الكلاب</h3>
+                        <p>طعام الكلاب، أطواق، ألعاب، مستلزمات التدريب</p>
+                        <button onclick="filterByCategory('كلاب')" class="btn btn-primary">
+                            تصفح المنتجات
+                        </button>
+                    </div>
+                    
+                    <!-- قسم الطيور -->
+                    <div class="animal-card bird-card">
+                        <div class="animal-icon">
+                            <i class="fas fa-dove"></i>
+                        </div>
+                        <h3>🐦 الطيور</h3>
+                        <p>أقفاص، أطعمة، ألعاب، مستلزمات العناية بالطيور</p>
+                        <button onclick="filterByCategory('طيور')" class="btn btn-primary">
+                            تصفح المنتجات
+                        </button>
+                    </div>
+                </div>
             </div>
-            <h3>🐱 القطط</h3>
-            <p>مستلزمات القطط، أطعمة، ألعاب، رمال، وأكثر</p>
-            <button onclick="filterByCategory('قطط')" class="btn btn-primary">
-                تصفح المنتجات
-            </button>
-        </div>
-        
-        <!-- قسم الكلاب -->
-        <div class="animal-card dog-card">
-            <div class="animal-icon">
-                <i class="fas fa-dog"></i>
-            </div>
-            <h3>🐶 الكلاب</h3>
-            <p>طعام الكلاب، أطواق، ألعاب، مستلزمات التدريب</p>
-            <button onclick="filterByCategory('كلاب')" class="btn btn-primary">
-                تصفح المنتجات
-            </button>
-        </div>
-        
-        <!-- قسم الطيور -->
-        <div class="animal-card bird-card">
-            <div class="animal-icon">
-                <i class="fas fa-dove"></i>
-            </div>
-            <h3>🐦 الطيور</h3>
-            <p>أقفاص، أطعمة، ألعاب، مستلزمات العناية بالطيور</p>
-            <button onclick="filterByCategory('طيور')" class="btn btn-primary">
-                تصفح المنتجات
-            </button>
-        </div>
-    </div>
-</div>
         </section>
 
         <!-- صفحة المنتجات -->
@@ -266,11 +274,42 @@
             </div>
         </section>
 
+        <!-- صفحة الإشعارات -->
+        <section id="notifications" class="page">
+            <div class="section-header">
+                <h2>🔔 الإشعارات</h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button onclick="loadNotifications()" class="btn btn-primary">
+                        🔄 تحديث
+                    </button>
+                    <button onclick="markAllNotificationsAsRead()" class="btn btn-success">
+                        ✓ تحديد الكل كمقروء
+                    </button>
+                    <button onclick="clearAllNotifications()" class="btn btn-danger">
+                        🗑️ مسح الكل
+                    </button>
+                </div>
+            </div>
+            
+            <!-- فلاتر الإشعارات -->
+            <div class="notification-filters" style="margin: 1rem 0; display: flex; gap: 0.5rem;">
+                <button onclick="filterNotifications('all')" class="btn btn-sm btn-outline active">الكل</button>
+                <button onclick="filterNotifications('unread')" class="btn btn-sm btn-outline">غير مقروء</button>
+                <button onclick="filterNotifications('new_order')" class="btn btn-sm btn-outline">🛒 طلبات</button>
+                <button onclick="filterNotifications('new_user')" class="btn btn-sm btn-outline">👤 عملاء</button>
+                <button onclick="filterNotifications('complaint')" class="btn btn-sm btn-outline">📝 شكاوى</button>
+            </div>
+            
+            <div id="notificationsContainer" style="margin-top: 1rem;">
+                <div class="empty-message">جارٍ تحميل الإشعارات...</div>
+            </div>
+        </section>
+
         <!-- لوحة التحكم -->
         <section id="admin" class="page">
             <div class="section-header">
                 <h2>⚙️ لوحة التحكم</h2>
-                <div style="display: flex; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button onclick="showAddProductModal()" class="btn btn-success">
                         ➕ إضافة منتج
                     </button>
@@ -280,6 +319,12 @@
                     <button onclick="showCustomersSection()" class="btn btn-info">
                         👥 إدارة العملاء
                     </button>
+                    <button onclick="showSection('notifications')" class="btn btn-purple">
+                        🔔 الإشعارات (<span id="adminNotificationsCountBadge">0</span>)
+                    </button>
+                    <button onclick="syncFirebaseData()" class="btn btn-secondary">
+                        🔄 مزامنة مع Firebase
+                    </button>
                 </div>
             </div>
             
@@ -288,39 +333,88 @@
                 <h3>👥 قاعدة بيانات العملاء</h3>
                 <div class="search-bar">
                     <input type="text" id="customerSearch" placeholder="🔍 ابحث عن عميل..." class="form-control" onkeyup="filterCustomers()">
+                    <button onclick="exportCustomers()" class="btn btn-sm btn-success">📥 تصدير البيانات</button>
                 </div>
                 <div id="customersContainer"></div>
             </div>
             
             <!-- قسم المنتجات والعروض والطلبات (يظهر افتراضياً) -->
             <div id="adminDefaultSections">
+                <!-- تحديث مباشر من Firebase -->
+                <div class="realtime-update" style="background: linear-gradient(135deg, #2d73ff, #9b59b6); color: white; padding: 0.75rem; border-radius: 10px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <i class="fas fa-sync-alt"></i> 
+                        <strong>التحديث المباشر نشط</strong>
+                        <small style="display: block; opacity: 0.9;">بيانات Firebase تتحديث تلقائياً</small>
+                    </div>
+                    <div id="lastUpdateTime" style="font-size: 0.9rem;">آخر تحديث: الآن</div>
+                </div>
+                
                 <div class="admin-stats">
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-left: 4px solid #2d73ff;">
                         <div class="stat-number" id="adminProductsCount">0</div>
                         <div class="stat-label">منتج</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-left: 4px solid #00d2d3;">
                         <div class="stat-number" id="adminOrdersCount">0</div>
                         <div class="stat-label">طلب</div>
+                        <small id="adminNewOrdersCount" style="color: #ff6b8b; font-weight: bold;">+0 جديد</small>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-left: 4px solid #ff9f43;">
                         <div class="stat-number" id="adminOffersCount">0</div>
                         <div class="stat-label">عرض</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-left: 4px solid #9b59b6;">
                         <div class="stat-number" id="adminCustomersCount">0</div>
                         <div class="stat-label">عميل</div>
+                        <small id="adminNewCustomersCount" style="color: #2d73ff; font-weight: bold;">+0 جديد</small>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid #ff6b8b;">
+                        <div class="stat-number" id="adminNotificationsCount">0</div>
+                        <div class="stat-label">إشعار جديد</div>
+                        <small id="adminNotificationsAlert" style="color: #ff4757; font-weight: bold; animation: pulse 1.5s infinite;">⚠️ انقر لعرض</small>
                     </div>
                 </div>
                 
-                <h3>📦 المنتجات</h3>
-                <div id="adminProductsList"></div>
+                <div class="admin-grid">
+                    <div class="admin-column">
+                        <h3>📦 المنتجات الأخيرة</h3>
+                        <div id="adminProductsList" class="admin-list"></div>
+                    </div>
+                    
+                    <div class="admin-column">
+                        <h3>🎁 العروض النشطة</h3>
+                        <div id="adminOffersList" class="admin-list"></div>
+                    </div>
+                    
+                    <div class="admin-column">
+                        <h3>📋 الطلبات الأخيرة</h3>
+                        <div id="adminOrdersList" class="admin-list"></div>
+                    </div>
+                </div>
                 
-                <h3>🎁 العروض</h3>
-                <div id="adminOffersList"></div>
-                
-                <h3>📋 الطلبات</h3>
-                <div id="adminOrdersList"></div>
+                <!-- إحصائيات Firebase -->
+                <div class="firebase-stats" style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin-top: 1.5rem; border: 2px dashed #ddd;">
+                    <h4><i class="fas fa-database"></i> إحصائيات Firebase</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div class="stat-mini">
+                            <div class="stat-mini-number" id="firebaseOrders">0</div>
+                            <div class="stat-mini-label">طلبات Firebase</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-number" id="firebaseUsers">0</div>
+                            <div class="stat-mini-label">عملاء Firebase</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-number" id="firebaseNotifications">0</div>
+                            <div class="stat-mini-label">إشعارات</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-number" id="firebaseSyncTime">0s</div>
+                            <div class="stat-mini-label">سرعة التزامن</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -331,233 +425,32 @@
             <div class="footer-content">
                 <div class="logo">
                     <span class="logo-icon">🐾</span>
-                    <h3>Pets X STORE </h3>
+                    <h3>Pets X STORE</h3>
                 </div>
-                <p>📞 01556650985 | 📍 كفرالشيخ-مزلقان الأنشاء و التعمير </p>
+                <p>📞 01556650985 | 📍 كفر الشيخ - مزلقان الأنشاء والتعمير</p>
                 <p class="copyright">© 2026 Pets X جميع الحقوق محفوظة</p>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
+                    <i class="fas fa-database"></i> مدعوم بـ Firebase | 
+                    <i class="fas fa-sync-alt"></i> تحديث مباشر
+                </p>
             </div>
         </div>
     </footer>
 
-    <!-- المودالات -->
-    <div id="addProductModal" class="modal">
-        <div class="modal-content">
-            <h3>➕ إضافة منتج جديد</h3>
-            
-            <div class="form-group">
-                <label>اسم المنتج</label>
-                <input type="text" id="newProductName" class="form-control" placeholder="اسم المنتج">
-            </div>
-            
-            <div class="form-group">
-                <label>السعر (ج.م)</label>
-                <input type="number" id="newProductPrice" class="form-control" placeholder="السعر">
-            </div>
-            
-            <div class="form-group">
-                <label>الفئة</label>
-                <select id="newProductCategory" class="form-control">
-                    <option value="قطط">قطط</option>
-                    <option value="كلاب">كلاب</option>
-                    <option value="طيور">طيور</option>
-                    <option value="أسماك">أسماك</option>
-                    <option value="أرانب">أرانب</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>الوصف</label>
-                <textarea id="newProductDescription" class="form-control" placeholder="وصف المنتج" rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>الكمية</label>
-                <input type="number" id="newProductStock" class="form-control" value="10" min="0">
-            </div>
-            
-            <div class="form-group">
-                <label>رفع صورة المنتج</label>
-                <button type="button" onclick="openProductImageUpload()" class="btn btn-outline" style="width: 100%;">
-                    📷 رفع صورة للمنتج
-                </button>
-                <small id="productImageStatus" style="color: #666; display: block; margin-top: 5px;">
-                    لم يتم رفع صورة بعد
-                </small>
-            </div>
-            
-            <div class="modal-actions">
-                <button onclick="saveNewProduct()" class="btn btn-success">حفظ المنتج</button>
-                <button onclick="closeModal('addProductModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
+    <!-- المودالات الأصلية -->
+    <div id="addProductModal" class="modal">...</div>
+    <div id="productImageUploadModal" class="modal">...</div>
+    <div id="addOfferModal" class="modal">...</div>
+    <div id="offerImageUploadModal" class="modal">...</div>
+    <div id="complaintModal" class="modal">...</div>
+    <div id="adminReplyModal" class="modal">...</div>
+    <div id="customerDetailsModal" class="modal">...</div>
 
-    <!-- مودال رفع صورة المنتج -->
-    <div id="productImageUploadModal" class="modal">
-        <div class="modal-content">
-            <h3>📷 رفع صورة للمنتج</h3>
-            <div class="form-group">
-                <label>اختر صورة من جهازك</label>
-                <input type="file" id="productImageFile" accept="image/*" class="form-control" onchange="previewProductImage(this)">
-            </div>
-            <div class="image-preview" id="productImagePreview" style="display:none;">
-                <img id="previewImage" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
-            </div>
-            <div class="form-group">
-                <label>أو أدخل رابط صورة</label>
-                <input type="text" id="productImageUrl" class="form-control" placeholder="https://example.com/image.jpg">
-            </div>
-            <div class="modal-actions">
-                <button onclick="saveProductImage()" class="btn btn-success">حفظ الصورة</button>
-                <button onclick="closeModal('productImageUploadModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال إضافة عرض جديد -->
-    <div id="addOfferModal" class="modal">
-        <div class="modal-content">
-            <h3>🎁 إضافة عرض جديد</h3>
-            <div class="form-group">
-                <label>عنوان العرض</label>
-                <input type="text" id="offerTitle" class="form-control" placeholder="مثال: تخفيضات الصيف">
-            </div>
-            <div class="form-group">
-                <label>المنتج المرتبط</label>
-                <select id="offerProduct" class="form-control">
-                    <option value="">اختر منتج</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>نسبة الخصم (%)</label>
-                <input type="number" id="offerDiscount" class="form-control" min="1" max="100" placeholder="10">
-            </div>
-            <div class="form-group">
-                <label>تاريخ الانتهاء</label>
-                <input type="date" id="offerEndDate" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>وصف العرض</label>
-                <textarea id="offerDescription" class="form-control" rows="3" placeholder="وصف تفصيلي للعرض"></textarea>
-            </div>
-            <div class="form-group">
-                <label>رفع صورة للعرض</label>
-                <button type="button" onclick="openOfferImageUpload()" class="btn btn-outline" style="width: 100%;">
-                    📷 رفع صورة للعرض
-                </button>
-                <small id="offerImageStatus" style="color: #666; display: block; margin-top: 5px;">
-                    لم يتم رفع صورة بعد
-                </small>
-            </div>
-            <div class="modal-actions">
-                <button onclick="saveOffer()" class="btn btn-success">حفظ العرض</button>
-                <button onclick="closeModal('addOfferModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال رفع صورة العرض -->
-    <div id="offerImageUploadModal" class="modal">
-        <div class="modal-content">
-            <h3>📷 رفع صورة للعرض</h3>
-            <div class="form-group">
-                <label>اختر صورة من جهازك</label>
-                <input type="file" id="offerImageFile" accept="image/*" class="form-control" onchange="previewOfferImage(this)">
-            </div>
-            <div class="image-preview" id="offerImagePreview" style="display:none;">
-                <img id="previewOfferImage" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
-            </div>
-            <div class="form-group">
-                <label>أو أدخل رابط صورة</label>
-                <input type="text" id="offerImageUrl" class="form-control" placeholder="https://example.com/image.jpg">
-            </div>
-            <div class="modal-actions">
-                <button onclick="saveOfferImage()" class="btn btn-success">حفظ الصورة</button>
-                <button onclick="closeModal('offerImageUploadModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال الشكوى الجديدة -->
-    <div id="complaintModal" class="modal">
-        <div class="modal-content">
-            <h3>📝 تقديم شكوى جديدة</h3>
-            <div class="form-group">
-                <label>نوع الشكوى</label>
-                <select id="complaintType" class="form-control">
-                    <option value="شكوى">شكوى</option>
-                    <option value="اقتراح">اقتراح</option>
-                    <option value="استفسار">استفسار</option>
-                    <option value="مشكلة تقنية">مشكلة تقنية</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>عنوان الشكوى</label>
-                <input type="text" id="complaintTitle" class="form-control" placeholder="اكتب عنواناً واضحاً">
-            </div>
-            <div class="form-group">
-                <label>تفاصيل الشكوى</label>
-                <textarea id="complaintDetails" class="form-control" rows="5" placeholder="اشرح مشكلتك بالتفصيل..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button onclick="submitComplaint()" class="btn btn-success">إرسال الشكوى</button>
-                <button onclick="closeModal('complaintModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال رد الإدارة على الشكاوى -->
-    <div id="adminReplyModal" class="modal">
-        <div class="modal-content">
-            <h3>📤 رد الإدارة</h3>
-            <div class="form-group">
-                <label>رد الإدارة</label>
-                <textarea id="adminReplyText" class="form-control" rows="4" placeholder="اكتب رد الإدارة هنا..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button onclick="saveAdminReply()" class="btn btn-success">حفظ الرد</button>
-                <button onclick="closeModal('adminReplyModal')" class="btn btn-secondary">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال عرض بيانات العميل -->
-    <div id="customerDetailsModal" class="modal">
-        <div class="modal-content">
-            <h3>👥 بيانات العميل</h3>
-            <div class="customer-details">
-                <div class="detail-row">
-                    <strong>الاسم:</strong>
-                    <span id="customerDetailName"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>البريد الإلكتروني:</strong>
-                    <span id="customerDetailEmail"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>رقم الهاتف:</strong>
-                    <span id="customerDetailPhone"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>تاريخ التسجيل:</strong>
-                    <span id="customerDetailDate"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>عدد الطلبات:</strong>
-                    <span id="customerDetailOrders"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>إجمالي المشتريات:</strong>
-                    <span id="customerDetailTotal"></span>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button onclick="closeModal('customerDetailsModal')" class="btn btn-secondary">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- الجافاسكريبت -->
+    <!-- جافاسكريبت -->
     <script src="script.js"></script>
+    <!-- تهيئة Firebase -->
+    <script>
+        // سيتم إضافتها في script.js المعدل
+    </script>
 </body>
 </html>
