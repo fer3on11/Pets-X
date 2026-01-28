@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js"></script>
 </head>
 <body>
     <!-- الهيدر -->
@@ -152,7 +152,7 @@
             </div>
             
             <div id="offersContainer" class="offers-grid">
-                <div class="empty-message">لا توجد عروض حالياً</div>
+                <div class="empty-message">جارٍ تحميل العروض...</div>
             </div>
         </section>
 
@@ -184,11 +184,11 @@
                 <h2>🔐 تسجيل الدخول</h2>
                 <div class="form-group">
                     <label>البريد الإلكتروني</label>
-                    <input type="email" id="loginEmail" class="form-control" value="">
+                    <input type="email" id="loginEmail" class="form-control" placeholder="example@email.com">
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور</label>
-                    <input type="password" id="loginPassword" class="form-control" value="">
+                    <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
                 </div>
                 <button onclick="login()" class="btn btn-primary">دخول</button>
                 <div style="text-align: center; margin-top: 1.5rem;">
@@ -270,7 +270,7 @@
             </div>
             
             <div id="complaintsContainer" style="margin-top: 2rem;">
-                <div class="empty-message">لا توجد شكاوى لعرضها</div>
+                <div class="empty-message">جارٍ تحميل الشكاوى...</div>
             </div>
         </section>
 
@@ -437,14 +437,98 @@
         </div>
     </footer>
 
-    <!-- المودالات الأصلية -->
-    <div id="addProductModal" class="modal">...</div>
-    <div id="productImageUploadModal" class="modal">...</div>
-    <div id="addOfferModal" class="modal">...</div>
-    <div id="offerImageUploadModal" class="modal">...</div>
-    <div id="complaintModal" class="modal">...</div>
-    <div id="adminReplyModal" class="modal">...</div>
-    <div id="customerDetailsModal" class="modal">...</div>
+    <!-- المودالات -->
+    <div id="addProductModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>➕ إضافة منتج جديد</h3>
+            <div class="form-group">
+                <label>اسم المنتج</label>
+                <input type="text" id="productName" class="form-control" placeholder="أدخل اسم المنتج">
+            </div>
+            <div class="form-group">
+                <label>السعر (ج.م)</label>
+                <input type="number" id="productPrice" class="form-control" placeholder="أدخل السعر" min="0">
+            </div>
+            <div class="form-group">
+                <label>الفئة</label>
+                <select id="productCategory" class="form-control">
+                    <option value="">اختر الفئة</option>
+                    <option value="قطط">قطط</option>
+                    <option value="كلاب">كلاب</option>
+                    <option value="طيور">طيور</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>الوصف</label>
+                <textarea id="productDescription" class="form-control" placeholder="أدخل وصف المنتج" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>الكمية المتاحة</label>
+                <input type="number" id="productStock" class="form-control" placeholder="الكمية" min="0" value="10">
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveNewProduct()" class="btn btn-success">💾 حفظ المنتج</button>
+                <button onclick="closeModal('addProductModal')" class="btn btn-danger">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة عرض -->
+    <div id="addOfferModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>🎁 إضافة عرض جديد</h3>
+            <div class="form-group">
+                <label>عنوان العرض</label>
+                <input type="text" id="offerTitle" class="form-control" placeholder="أدخل عنوان العرض">
+            </div>
+            <div class="form-group">
+                <label>وصف العرض</label>
+                <textarea id="offerDescription" class="form-control" placeholder="أدخل وصف العرض" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>نسبة الخصم (%)</label>
+                <input type="number" id="offerDiscount" class="form-control" placeholder="أدخل نسبة الخصم" min="1" max="100">
+            </div>
+            <div class="form-group">
+                <label>تاريخ انتهاء العرض</label>
+                <input type="date" id="offerEndDate" class="form-control">
+            </div>
+            <div class="modal-actions">
+                <button onclick="saveOffer()" class="btn btn-success">💾 حفظ العرض</button>
+                <button onclick="closeModal('addOfferModal')" class="btn btn-danger">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال الشكاوى -->
+    <div id="complaintModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>📝 تقديم شكوى جديدة</h3>
+            <div class="form-group">
+                <label>نوع الشكوى</label>
+                <select id="complaintType" class="form-control">
+                    <option value="">اختر نوع الشكوى</option>
+                    <option value="مشكلة في المنتج">مشكلة في المنتج</option>
+                    <option value="مشكلة في التوصيل">مشكلة في التوصيل</option>
+                    <option value="مشكلة في الدفع">مشكلة في الدفع</option>
+                    <option value="اقتراح">اقتراح</option>
+                    <option value="شكوى أخرى">شكوى أخرى</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>موضوع الشكوى</label>
+                <input type="text" id="complaintSubject" class="form-control" placeholder="أدخل موضوع الشكوى">
+            </div>
+            <div class="form-group">
+                <label>تفاصيل الشكوى</label>
+                <textarea id="complaintDetails" class="form-control" placeholder="أدخل تفاصيل الشكوى" rows="5"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button onclick="submitComplaint()" class="btn btn-primary">📤 إرسال الشكوى</button>
+                <button onclick="closeModal('complaintModal')" class="btn btn-danger">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
 
     <!-- جافاسكريبت -->
     <script src="script.js"></script>
