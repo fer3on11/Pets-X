@@ -1279,5 +1279,37 @@ function filterByCategory(category) { /* ... */ }
 // إعداد الأحداث
 function setupEvents() { /* ... */ }
 
+// إصلاح الروابط على الموبايل
+document.addEventListener('DOMContentLoaded', function() {
+    // إصلاح جميع روابط القفز
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                // إظهار القسم
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                targetElement.classList.add('active');
+                
+                // تحديث القائمة
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // تمرير سلس للموبايل
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+});
+
 // بدء التطبيق
 document.addEventListener('DOMContentLoaded', initApp);
